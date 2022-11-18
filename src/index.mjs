@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { homedir } from 'node:os';
+import { receiveJSON } from '@quanxiaoxiao/about-http';
 
 export { default as Semaphore } from './semaphore.mjs';
 
@@ -27,3 +28,15 @@ export const getPathname = (str) => {
 };
 
 export const sha256 = (str) => createHash('sha256').update(str).digest().toString('hex');
+
+export const parseReqData = async (ctx, validate) => { // eslint-disable-line
+  try {
+    const data = await receiveJSON(ctx.req);
+    if (validate && !validate(data)) {
+      ctx.throw(400, validate.errors ? JSON.stringify(validate.errors) : '');
+    }
+    return data;
+  } catch (error) {
+    ctx.throw(400, error.message);
+  }
+};
