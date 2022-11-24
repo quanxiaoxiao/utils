@@ -1,4 +1,5 @@
 import { join } from 'node:path';
+import { Buffer } from 'node:buffer';
 import { createHash } from 'node:crypto';
 import { homedir } from 'node:os';
 import { receiveJSON } from '@quanxiaoxiao/about-http';
@@ -39,4 +40,22 @@ export const parseReqData = async (ctx, validate) => { // eslint-disable-line
   } catch (error) {
     ctx.throw(400, error.message);
   }
+};
+
+export const etag = (ctx, body) => {
+  if (!body) {
+    return null;
+  }
+  const type = typeof body;
+  const output = Buffer.isBuffer(body) || type === 'string' ? body : JSON.stringify(body);
+  const hash = sha256(output);
+  if (ctx.get('if-none-match') !== hash) {
+    ctx.set('etag', hash);
+    if (type === 'object') {
+      ctx.set('content-type', 'application/json');
+    }
+    return output;
+  }
+  ctx.status = 304;
+  return null;
 };

@@ -1,6 +1,6 @@
 {
   "name": "@quanxiaoxiao/utils",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "keywords": [],
   "author": "",
@@ -19,7 +19,7 @@
     "@quanxiaoxiao/about-http": "^0.1.5"
   },
   "devDependencies": {
-    "ava": "^4.3.3",
+    "ava": "^5.1.0",
     "eslint": "^8.9.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.25.4",
