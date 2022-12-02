@@ -1,6 +1,6 @@
 {
   "name": "@quanxiaoxiao/utils",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "keywords": [],
   "author": "",
@@ -16,7 +16,8 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "@quanxiaoxiao/about-http": "^0.1.5"
+    "@quanxiaoxiao/about-http": "^0.1.5",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "ava": "^5.1.0",

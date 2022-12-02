@@ -2,6 +2,7 @@ import { join } from 'node:path';
 import { Buffer } from 'node:buffer';
 import { createHash } from 'node:crypto';
 import { homedir } from 'node:os';
+import _ from 'lodash';
 import { receiveJSON } from '@quanxiaoxiao/about-http';
 
 export { default as Semaphore } from './semaphore.mjs';
@@ -58,4 +59,94 @@ export const etag = (ctx, body) => {
   }
   ctx.status = 304;
   return null;
+};
+
+export const isAliasExistWithCreate = async (alias, Model) => {
+  if (alias == null) {
+    return false;
+  }
+  const v = alias.trim();
+  if (v === '') {
+    return false;
+  }
+  const matched = await Model.findOne({
+    alias: v,
+    invalid: {
+      $ne: true,
+    },
+  });
+  if (matched) {
+    return true;
+  }
+  return false;
+};
+
+export const isAliasExistWithUpdate = async (item, alias, Model) => {
+  if (alias == null) {
+    return false;
+  }
+  const v = alias.trim();
+  if (v === '') {
+    return false;
+  }
+  if (item.alias === v) {
+    return false;
+  }
+  const matched = await Model.findOne({
+    alias: v,
+    invalid: {
+      $ne: true,
+    },
+  });
+  if (matched) {
+    return true;
+  }
+  return false;
+};
+
+export const json2graphqlArgs = (obj) => {
+  if (!_.isPlainObject(obj)) {
+    return ['{', '}'].join('\n');
+  }
+  const handleArray = (v) => `[${v.map((d) => {
+    if (d == null) {
+      return 'null';
+    }
+    const type = typeof d;
+    if (type === 'string' || type === 'number' || type === 'boolean') {
+      return JSON.stringify(d);
+    }
+    if (Array.isArray(d)) {
+      return handleArray(d);
+    }
+    return json2graphqlArgs(d);
+  })}]`;
+  const map = {
+    '[object Null]': () => null,
+    '[object Number]': (v) => v,
+    '[object Boolean]': (v) => v,
+    '[object Object]': (v) => json2graphqlArgs(v),
+    '[object String]': (v) => JSON.stringify(v),
+    '[object Date]': (v) => v.getTime(),
+    '[object Array]': handleArray,
+    '[object Undefined]': () => null,
+  };
+
+  const args = Object
+    .entries(obj)
+    .map(([key, value]) => {
+      const type = Object.prototype.toString.call(value);
+      const handler = map[type];
+      if (!handler) {
+        return `${key}:null`;
+      }
+      return `${key}:${handler(value)}`;
+    })
+    .join('\n');
+
+  return [
+    '{',
+    args,
+    '}',
+  ].join('\n');
 };
