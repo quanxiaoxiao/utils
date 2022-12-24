@@ -150,3 +150,61 @@ export const json2graphqlArgs = (obj) => {
     '}',
   ].join('\n');
 };
+
+export const setOrder = async (input, query, Model) => {
+  const len = input.length;
+  const pipeline = [
+    {
+      $match: {
+        invalid: {
+          $ne: true,
+        },
+        ...query,
+      },
+    },
+    {
+      $sort: {
+        order: -1,
+        timeCreate: -1,
+      },
+    },
+    {
+      $project: {
+        _id: {
+          $toString: '$_id',
+        },
+      },
+    },
+  ];
+  if (len === 0) {
+    const arr = await Model
+      .aggregate(pipeline);
+    return arr.map((d) => d._id);
+  }
+  await Model.updateMany(
+    {
+      ...query,
+    },
+    {
+      $set: {
+        order: null,
+      },
+    },
+  );
+  const updates = input.map((_id, i) => ({
+    updateOne: {
+      filter: {
+        _id,
+      },
+      update: {
+        $set: {
+          order: len - i,
+        },
+      },
+    },
+  }));
+  await Model.bulkWrite(updates);
+  const arr = await Model
+    .aggregate(pipeline);
+  return arr.map((d) => d._id);
+};
