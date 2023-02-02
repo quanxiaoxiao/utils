@@ -4,6 +4,7 @@ import { etag, sha256 } from '../src/index.mjs';
 test('etag', (t) => {
   const ctx = {
     _etag: null,
+    method: 'GET',
     _contentType: null,
     get: (name) => {
       if (name === 'if-none-match') {
@@ -31,6 +32,11 @@ test('etag', (t) => {
   t.is(etag(ctx, { name: 'cqq' }), JSON.stringify({ name: 'cqq' }));
   t.is(ctx.get('if-none-match'), sha256(JSON.stringify({ name: 'cqq' })));
   t.is(ctx.get('content-type'), 'application/json');
+  ctx.status = 200;
   t.is(etag(ctx, { name: 'cqq' }), null);
   t.is(ctx.status, 304);
+  ctx.method = 'POST';
+  ctx.status = 200;
+  etag(ctx, { name: 'cqq' });
+  t.true(ctx.status !== 304);
 });

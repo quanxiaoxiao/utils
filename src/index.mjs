@@ -44,8 +44,11 @@ export const parseReqData = async (ctx, validate) => { // eslint-disable-line
 };
 
 export const etag = (ctx, body) => {
-  if (!body) {
+  if (body == null || body === '') {
     return null;
+  }
+  if (ctx.method.toUpperCase() !== 'GET') {
+    return body;
   }
   const type = typeof body;
   const output = Buffer.isBuffer(body) || type === 'string' ? body : JSON.stringify(body);
