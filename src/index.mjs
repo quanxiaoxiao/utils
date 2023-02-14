@@ -29,25 +29,17 @@ export const getPathname = (str) => {
   return str;
 };
 
-export const sha256 = (str) => createHash('sha256').update(str).digest().toString('hex');
-
-export const parseReqData = async (ctx, validate) => { // eslint-disable-line
-  try {
-    const data = await receiveJSON(ctx.req);
-    if (validate && !validate(data)) {
-      ctx.throw(400, validate.errors ? JSON.stringify(validate.errors) : '');
-    }
-    return data;
-  } catch (error) {
-    ctx.throw(400, error.message);
-  }
-};
+export const sha256 = (str) => createHash('sha256')
+  .update(str)
+  .digest()
+  .toString('hex');
 
 export const etag = (ctx, body) => {
   if (body == null || body === '') {
     return null;
   }
-  if (ctx.method.toUpperCase() !== 'GET') {
+  const method = _.get(ctx, 'method', '').toUpperCase();
+  if (method !== 'GET') {
     return body;
   }
   const type = typeof body;
@@ -55,7 +47,7 @@ export const etag = (ctx, body) => {
   const hash = sha256(output);
   if (ctx.get('if-none-match') !== hash) {
     ctx.set('etag', hash);
-    if (type === 'object') {
+    if (type === 'object' && !Buffer.isBuffer(body)) {
       ctx.set('content-type', 'application/json');
     }
     return output;
@@ -210,4 +202,16 @@ export const setOrder = async (input, query, Model) => {
   const arr = await Model
     .aggregate(pipeline);
   return arr.map((d) => d._id);
+};
+
+export const parseReqData = async (ctx, validate) => { // eslint-disable-line
+  try {
+    const data = await receiveJSON(ctx.req);
+    if (validate && !validate(data)) {
+      ctx.throw(400, validate.errors ? JSON.stringify(validate.errors) : '');
+    }
+    return data;
+  } catch (error) {
+    ctx.throw(400, error.message);
+  }
 };
