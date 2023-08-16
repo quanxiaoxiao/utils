@@ -3,7 +3,7 @@ import { Buffer } from 'node:buffer';
 import { createHash } from 'node:crypto';
 import { homedir } from 'node:os';
 import _ from 'lodash';
-import { receiveJSON } from '@quanxiaoxiao/about-http';
+import createError from 'http-errors';
 
 export { default as Semaphore } from './semaphore.mjs';
 
@@ -56,166 +56,6 @@ export const etag = (ctx, body) => {
   return null;
 };
 
-export const isAliasExistWithCreate = async (alias, Model) => {
-  if (alias == null) {
-    return false;
-  }
-  const v = alias.trim();
-  if (v === '') {
-    return false;
-  }
-  const matched = await Model.findOne({
-    alias: v,
-    invalid: {
-      $ne: true,
-    },
-  });
-  if (matched) {
-    return true;
-  }
-  return false;
-};
-
-export const isAliasExistWithUpdate = async (item, alias, Model) => {
-  if (alias == null) {
-    return false;
-  }
-  const v = alias.trim();
-  if (v === '') {
-    return false;
-  }
-  if (item.alias === v) {
-    return false;
-  }
-  const matched = await Model.findOne({
-    alias: v,
-    invalid: {
-      $ne: true,
-    },
-  });
-  if (matched) {
-    return true;
-  }
-  return false;
-};
-
-export const json2graphqlArgs = (obj) => {
-  if (!_.isPlainObject(obj)) {
-    return ['{', '}'].join('\n');
-  }
-  const handleArray = (v) => `[${v.map((d) => {
-    if (d == null) {
-      return 'null';
-    }
-    const type = typeof d;
-    if (type === 'string' || type === 'number' || type === 'boolean') {
-      return JSON.stringify(d);
-    }
-    if (Array.isArray(d)) {
-      return handleArray(d);
-    }
-    return json2graphqlArgs(d);
-  })}]`;
-  const map = {
-    '[object Null]': () => null,
-    '[object Number]': (v) => v,
-    '[object Boolean]': (v) => v,
-    '[object Object]': (v) => json2graphqlArgs(v),
-    '[object String]': (v) => JSON.stringify(v),
-    '[object Date]': (v) => v.getTime(),
-    '[object Array]': handleArray,
-    '[object Undefined]': () => null,
-  };
-
-  const args = Object
-    .entries(obj)
-    .map(([key, value]) => {
-      const type = Object.prototype.toString.call(value);
-      const handler = map[type];
-      if (!handler) {
-        return `${key}:null`;
-      }
-      return `${key}:${handler(value)}`;
-    })
-    .join('\n');
-
-  return [
-    '{',
-    args,
-    '}',
-  ].join('\n');
-};
-
-export const setOrder = async (input, query, Model) => {
-  const len = input.length;
-  const pipeline = [
-    {
-      $match: {
-        invalid: {
-          $ne: true,
-        },
-        ...query,
-      },
-    },
-    {
-      $sort: {
-        order: -1,
-        timeCreate: -1,
-      },
-    },
-    {
-      $project: {
-        _id: {
-          $toString: '$_id',
-        },
-      },
-    },
-  ];
-  if (len === 0) {
-    const arr = await Model
-      .aggregate(pipeline);
-    return arr.map((d) => d._id);
-  }
-  await Model.updateMany(
-    {
-      ...query,
-    },
-    {
-      $set: {
-        order: null,
-      },
-    },
-  );
-  const updates = input.map((_id, i) => ({
-    updateOne: {
-      filter: {
-        _id,
-      },
-      update: {
-        $set: {
-          order: len - i,
-        },
-      },
-    },
-  }));
-  await Model.bulkWrite(updates);
-  const arr = await Model
-    .aggregate(pipeline);
-  return arr.map((d) => d._id);
-};
-
-export const parseReqData = async (ctx, validate) => { // eslint-disable-line
-  try {
-    const data = await receiveJSON(ctx.req);
-    if (validate && !validate(data)) {
-      ctx.throw(400, validate.errors ? JSON.stringify(validate.errors) : '');
-    }
-    return data;
-  } catch (error) {
-    ctx.throw(400, error.message);
-  }
-};
-
 export const getQuery = (args = {}, dateTimeKey = 'timeCreate') => {
   const query = {
     invalid: {
@@ -248,4 +88,37 @@ export const getQuery = (args = {}, dateTimeKey = 'timeCreate') => {
       [dataKey]: v,
     };
   }, query);
+};
+
+export const generateSortDataUpdates = (arr, input) => {
+  const len = input.length;
+  if (len !== input.length) {
+    throw createError(400);
+  }
+  const updates = [];
+  for (let i = 0; i < len; i++) {
+    const target = input[i];
+    if (!isValidObjectId(target)) {
+      throw createError(400);
+    }
+    if (!arr.some((d) => d._id.toString() === target)) {
+      throw createError(400);
+    }
+    updates.push({
+      updateOne: {
+        filter: {
+          _id: target,
+          invalid: {
+            $ne: true,
+          },
+        },
+        update: {
+          $set: {
+            order: len - i,
+          },
+        },
+      },
+    });
+  }
+  return updates;
 };
