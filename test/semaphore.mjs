@@ -7,6 +7,7 @@ test('Semaphore', (t) => {
   sem.acquire(() => {
     t.pass();
     sem.release();
+    sem.release();
   });
   sem.acquire(() => {
     t.pass();

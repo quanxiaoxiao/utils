@@ -1,35 +1,56 @@
-export default class Semaphore {
+import { EventEmitter } from 'node:events';
+
+class Semaphore extends EventEmitter {
+  #counter = 0;
+
+  #queue = [];
+
+  #capacity = 1;
+
   constructor(capacity) {
-    this.capacity = capacity;
-    this.counter = 0;
-    this.queue = [];
+    super();
+    if (typeof capacity === 'number' && capacity > 0) {
+      this.#capacity = capacity;
+    }
   }
 
-  take() {
-    if (this.queue.length > 0) {
-      const fn = this.queue.shift();
-      this.counter++;
+  #take() {
+    if (!this.isEmpty()) {
+      const fn = this.#queue.shift();
+      this.#counter++;
       fn();
     }
   }
 
+  #available() {
+    return this.#capacity > this.#counter;
+  }
+
   acquire(fn) {
-    if (this.available()) {
-      this.counter++;
+    if (this.#available()) {
+      this.#counter++;
       fn();
     } else {
-      this.queue.push(fn);
+      this.#queue.push(fn);
     }
   }
 
   release() {
-    this.counter--;
-    process.nextTick(() => {
-      this.take();
-    });
+    if (this.#counter > 0) {
+      this.#counter--;
+      process.nextTick(() => {
+        if (!this.isEmpty()) {
+          this.#take();
+        } else {
+          this.emit('empty');
+        }
+      });
+    }
   }
 
-  available() {
-    return this.capacity > this.counter;
+  isEmpty() {
+    return this.#queue.length === 0;
   }
 }
+
+export default Semaphore;
