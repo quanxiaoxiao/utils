@@ -1,16 +1,18 @@
-import { EventEmitter } from 'node:events';
-
-class Semaphore extends EventEmitter {
+class Semaphore {
   #counter = 0;
 
   #queue = [];
 
   #capacity = 1;
 
-  constructor(capacity) {
-    super();
+  #emptyFn;
+
+  constructor(capacity, fn) {
     if (typeof capacity === 'number' && capacity > 0) {
       this.#capacity = capacity;
+    }
+    if (typeof fn === 'function') {
+      this.#emptyFn = fn;
     }
   }
 
@@ -41,10 +43,12 @@ class Semaphore extends EventEmitter {
       process.nextTick(() => {
         if (!this.isEmpty()) {
           this.#take();
-        } else {
-          this.emit('empty');
+        } else if (this.#emptyFn && this.#counter === 0) {
+          this.#emptyFn();
         }
       });
+    } else if (this.#emptyFn && this.isEmpty()) {
+      this.#emptyFn();
     }
   }
 
