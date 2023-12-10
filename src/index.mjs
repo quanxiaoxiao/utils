@@ -176,3 +176,15 @@ export const findIndex = (arr, compare) => {
   }
   return -1;
 };
+
+export const waitFor = async (n) => {
+  if (n == null || n <= 0) {
+    await Promise.resolve();
+  } else {
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, Math.floor(n));
+    });
+  }
+};
