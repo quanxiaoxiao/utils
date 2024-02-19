@@ -1,5 +1,11 @@
 export { default as Semaphore } from './semaphore.mjs';
 
+export {
+  getCurrentDateTime,
+  getDateNow,
+  getCurrentDateName,
+} from './dateTime.mjs';
+
 /**
  * @param {string} str
  * @returns {string}
