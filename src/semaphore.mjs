@@ -44,9 +44,10 @@ class Semaphore {
     if (this.#available()) {
       this.#counter++;
       fn();
-    } else {
-      this.#queue.push(fn);
+      return true;
     }
+    this.#queue.push(fn);
+    return false;
   }
 
   release() {
