@@ -1,3 +1,5 @@
+export { default as round } from './round.mjs';
+
 export { default as Semaphore } from './semaphore.mjs';
 
 export {
@@ -6,17 +8,8 @@ export {
   getCurrentDateName,
 } from './dateTime.mjs';
 
-/**
- * @param {string} str
- * @returns {string}
- */
 export const escapeString = (str) => str.replace(/([.+*?=^!:${}()[\]|/\\])/g, '\\$1');
 
-/**
- * @param {Array<?>} arr
- * @param {(a: any, b: any) => number} compare
- * @return {Array<?>}
- */
 export const sort = (arr, compare) => {
   if (!Array.isArray(arr)) {
     return [];
@@ -35,12 +28,6 @@ export const sort = (arr, compare) => {
   });
 };
 
-/**
- * @template T
- * @param {Array<T>} arr
- * @param {(a:any) => number | any} compare
- * @returns {number}
- */
 export const findIndex = (arr, compare) => {
   const len = arr.length;
   if (compare == null || len === 0) {
@@ -48,12 +35,9 @@ export const findIndex = (arr, compare) => {
   }
   let left = 0;
   let right = len;
-  /**
-   * @type {(a: any) => number}
-   */
   const fn = typeof compare === 'function'
     ? compare
-    : (/** @type {any} d */ d) => {
+    : (d) => {
       if (compare === d) {
         return 0;
       }
@@ -77,10 +61,6 @@ export const findIndex = (arr, compare) => {
   return -1;
 };
 
-/**
- * @param {number} [n]
- * @returns {Promise<void>}
- */
 export const waitFor = async (n) => {
   if (n == null || n <= 0) {
     await Promise.resolve();
@@ -91,16 +71,4 @@ export const waitFor = async (n) => {
       }, Math.floor(n));
     });
   }
-};
-
-/**
- * @param {number} value
- * @param {number} [decimals=0]
- * @returns {number}
- */
-export const round = (value, decimals = 0) => {
-  if (typeof value !== 'number' || Number.isNaN(value)) {
-    return NaN;
-  }
-  return Number(`${Math.round(Number(`${value}e${decimals}`))}e-${decimals}`);
 };
