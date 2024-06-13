@@ -1,19 +1,12 @@
 class Semaphore {
   #counter = 0;
 
-  /**
-   * @type {Array<Function>}
-   */
   #queue = [];
 
   #capacity = 1;
 
   #emptyFn;
 
-  /**
-   * @param {number} [capacity]
-   * @param {Function} [fn]
-   */
   constructor(capacity, fn) {
     if (typeof capacity === 'number' && capacity > 0) {
       this.#capacity = capacity;
@@ -37,9 +30,6 @@ class Semaphore {
     return this.#capacity > this.#counter;
   }
 
-  /**
-   * @param {Function} fn
-   */
   acquire(fn) {
     if (this.#available()) {
       this.#counter++;
