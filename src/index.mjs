@@ -2,6 +2,10 @@ export { default as round } from './round.mjs';
 
 export { default as Semaphore } from './semaphore.mjs';
 
+export { default as getValueOfPathname } from './getValueOfPathname.mjs';
+
+export { default as template } from './template.mjs';
+
 export {
   getCurrentDateTime,
   getDateNow,
