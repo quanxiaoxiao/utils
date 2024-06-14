@@ -1,6 +1,6 @@
 import getValueOfPathname from './getValueOfPathname.mjs';
 
-export default (str) => {
+export default (str, encode = (s) => s) => {
   return (data) => {
     if (typeof str !== 'string') {
       return '';
@@ -14,7 +14,7 @@ export default (str) => {
       if (value == null) {
         return '';
       }
-      return `${value}`;
+      return `${encode(value)}`;
     });
     if (result.includes('\\')) {
       return result.replace(/(\\{|\\})/g, (a, b) => {

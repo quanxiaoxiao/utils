@@ -22,4 +22,5 @@ test('template', () => {
   assert.equal(template('a\\{\\{a\\}\\}ac{{b}}d')({ a: '111', b: '222' }), 'a{{a}}ac222d');
   assert.equal(template('a\\{{{a}}ac{{b}}d')({ a: '111', b: '222' }), 'a{111ac222d');
   assert.equal(template('a{\\{{a}}ac{{b}}d')({ a: '111', b: '222' }), 'a{{{a}}ac222d');
+  assert.equal(template('a{{a}}a', (s) => encodeURIComponent(s))({ a: 'bb s,' }), `a${encodeURIComponent('bb s,')}a`);
 });
