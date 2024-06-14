@@ -12,19 +12,19 @@ export default (str, encode = (s) => s) => {
     const result = str.replace(regexp, (a, dataKey) => {
       const key = dataKey.trim();
       if (key === '') {
-        return encode('');
+        return encode('', null);
       }
       if (/^'((?:\\'|[^])*?)'$/.test(key)) {
-        return encode(RegExp.$1.replace(/\\'/g, `'`));
+        return encode(RegExp.$1.replace(/\\'/g, `'`), null);
       }
       if (/^"((?:\\"|[^])*?)"$/.test(key)) {
-        return encode(RegExp.$1.replace(/\\"/g, '"'));
+        return encode(RegExp.$1.replace(/\\"/g, '"'), null);
       }
       const value = getValueOfPathname(key)(data);
       if (value == null) {
-        return encode('');
+        return encode('', key);
       }
-      return `${encode(value)}`;
+      return encode(value, key);
     });
     if (result.includes('\\')) {
       return result.replace(/(\\{|\\})/g, (a, b) => {
