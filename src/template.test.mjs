@@ -10,10 +10,12 @@ test('template', () => {
   assert.equal(template('a{{a}a')(), 'a{{a}a');
   assert.equal(template('aa}}a')(), 'aa}}a');
   assert.equal(template('a{{a}}a')(), 'aa');
-  assert.equal(template('a{{ a }}a')(), 'aa');
+  assert.equal(template('a{{ }}a')({}), 'aa');
+  assert.equal(template('a{{}}a')({}), 'aa');
+  assert.equal(template('a{{ a }}a')({}), 'aa');
   assert.equal(template('a{{.}}a')('999'), 'a999a');
   assert.equal(template('a{{ . }}a')('999'), 'a999a');
-  assert.equal(template('a{{}}a')('999'), 'a{{}}a');
+  assert.equal(template('a{{}}a')('999'), 'aa');
   assert.equal(template('a{{a}}a')({ a: 'bbb' }), 'abbba');
   assert.equal(template('a{{ a }}a')({ a: 'bbb' }), 'abbba');
   assert.equal(template('a{{ obj.name }}a')({ a: 'bbb', obj: { name: 'quan' }  }), 'aquana');
@@ -23,4 +25,10 @@ test('template', () => {
   assert.equal(template('a\\{{{a}}ac{{b}}d')({ a: '111', b: '222' }), 'a{111ac222d');
   assert.equal(template('a{\\{{a}}ac{{b}}d')({ a: '111', b: '222' }), 'a{{{a}}ac222d');
   assert.equal(template('a{{a}}a', (s) => encodeURIComponent(s))({ a: 'bb s,' }), `a${encodeURIComponent('bb s,')}a`);
+  assert.equal(template('a{{"good"}}a')(), 'agooda');
+  assert.equal(template('a{{\'good\'}}a')(), 'agooda');
+  assert.equal(template('a{{""}}a')(), 'aa');
+  assert.equal(template(`a{{''}}a`)(), 'aa');
+  assert.equal(template(`a{{"go\\"od"}}a`)(), 'ago"oda');
+  assert.equal(template(`a{{'go\\'od'}}a`)(), 'ago\'oda');
 });

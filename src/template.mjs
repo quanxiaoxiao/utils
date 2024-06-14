@@ -8,11 +8,21 @@ export default (str, encode = (s) => s) => {
     if (!str.includes('{{') || !str.includes('}}')) {
       return str;
     }
-    const regexp = /(?<!\\){{([^}]+?)}}/g;
+    const regexp = /(?<!\\){{((?:\\}|[^}])*?)}}/g;
     const result = str.replace(regexp, (a, dataKey) => {
-      const value = getValueOfPathname(dataKey.trim())(data);
+      const key = dataKey.trim();
+      if (key === '') {
+        return encode('');
+      }
+      if (/^'((?:\\'|[^])*?)'$/.test(key)) {
+        return encode(RegExp.$1.replace(/\\'/g, `'`));
+      }
+      if (/^"((?:\\"|[^])*?)"$/.test(key)) {
+        return encode(RegExp.$1.replace(/\\"/g, '"'));
+      }
+      const value = getValueOfPathname(key)(data);
       if (value == null) {
-        return '';
+        return encode('');
       }
       return `${encode(value)}`;
     });
