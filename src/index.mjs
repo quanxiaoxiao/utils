@@ -6,6 +6,8 @@ export { default as getValueOfPathname } from './getValueOfPathname.mjs';
 
 export { default as template } from './template.mjs';
 
+export { default as parseInteger } from './parseInteger.mjs';
+
 export {
   getCurrentDateTime,
   getDateNow,
