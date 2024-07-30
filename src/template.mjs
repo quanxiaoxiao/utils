@@ -7,27 +7,20 @@ const encodeFn = (value) => {
   return value;
 };
 
-const getDataValue = (data, key, encode) => {
-  if (key === '') {
-    return encode(null, null);
+const escape = (str) => {
+  if (str.includes('\\')) {
+    return str.replace(/(\\{|\\})/g, (a, b) => {
+      if (b === '\\{') {
+        return '{';
+      }
+      if (b === '\\}') {
+        return '}';
+      }
+      return b;
+    });
   }
-  if (/^'((?:\\'|[^])*?)'$/.test(key)) {
-    return encode(RegExp.$1.replace(/\\'/g, `'`), null);
-  }
-  if (/^"((?:\\"|[^])*?)"$/.test(key)) {
-    return encode(RegExp.$1.replace(/\\"/g, '"'), null);
-  }
-  const nestedMaches = key.match(/^([^[]+)\[([^[]+)\]$/);
-  if (nestedMaches) {
-    const subKey = getValueOfPathname(nestedMaches[2].trim())(data);
-    const subValue = getValueOfPathname(nestedMaches[1])(data);
-    if (subValue == null || subKey == null) {
-      return encode(null, null);
-    }
-    return encode(subValue[subKey], null);
-  }
-  const value = getValueOfPathname(key)(data);
-  return encode(value, key);
+
+  return str;
 };
 
 export default (express, encode = encodeFn) => {
@@ -38,21 +31,60 @@ export default (express, encode = encodeFn) => {
     return () => express;
   }
   const regexp = /(?<!\\){{((?:\\}|[^}])*?)}}/g;
-  return (data) => {
-    const result = express.replace(regexp, (a, dataKey) => getDataValue(data, dataKey.trim(), encode));
-
-    if (result.includes('\\')) {
-      return result.replace(/(\\{|\\})/g, (a, b) => {
-        if (b === '\\{') {
-          return '{';
-        }
-        if (b === '\\}') {
-          return '}';
-        }
-        return b;
-      });
+  let op;
+  const opList = [];
+  while (op = regexp.exec(express)) { // eslint-disable-line
+    const startOf = op.index;
+    const endOf = op.index + op[0].length;
+    const key = op[1].trim();
+    const d = {
+      startOf,
+      endOf,
+      key,
+    };
+    if (opList.length === 0) {
+      d.s = escape(express.slice(0, d.startOf));
+    } else {
+      const pre = opList[opList.length - 1];
+      d.s = escape(express.slice(pre.endOf, d.startOf));
     }
-
-    return result;
+    if (d.key === '') {
+      d.s = `${d.s}${encode(null, null)}`;
+    } else if (/^'((?:\\'|[^])*?)'$/.test(key)) {
+      d.s = `${d.s}${encode(escape(RegExp.$1.replace(/\\'/g, `'`)), null)}`;
+    } else if (/^"((?:\\"|[^])*?)"$/.test(key)) {
+      d.s = `${d.s}${encode(escape(RegExp.$1.replace(/\\"/g, '"')), null)}`;
+    } else {
+      const nestedMaches = key.match(/^([^[]+)\[([^[]+)\]$/);
+      if (nestedMaches) {
+        d.encode = (data) => {
+          const subObj = getValueOfPathname(nestedMaches[1])(data);
+          const subKey = getValueOfPathname(nestedMaches[2].trim())(data);
+          if (subObj == null || subKey == null) {
+            return encode(null, null);
+          }
+          return encode(subObj[subKey], null);
+        };
+      } else {
+        d.encode = (data) => encode(getValueOfPathname(d.key)(data), d.key);
+      }
+    }
+    opList.push(d);
+  }
+  const len = opList.length;
+  if (len === 0) {
+    return () => express;
+  }
+  return (data) => {
+    let result = '';
+    for (let i = 0; i < len; i++) {
+      const op = opList[i];
+      result += op.s;
+      if (op.encode) {
+        result += op.encode(data);
+      }
+    }
+    const last = opList[len - 1];
+    return `${result}${escape(express.slice(last.endOf))}`;
   };
 };
