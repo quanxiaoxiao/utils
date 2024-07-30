@@ -1,31 +1,46 @@
 import getValueOfPathname from './getValueOfPathname.mjs';
 
-export default (str, encode = (s) => s) => {
+const encodeFn = (value) => {
+  if (value == null) {
+    return '';
+  }
+  return value;
+};
+
+const getDataValue = (data, key, encode) => {
+  if (key === '') {
+    return encode(null, null);
+  }
+  if (/^'((?:\\'|[^])*?)'$/.test(key)) {
+    return encode(RegExp.$1.replace(/\\'/g, `'`), null);
+  }
+  if (/^"((?:\\"|[^])*?)"$/.test(key)) {
+    return encode(RegExp.$1.replace(/\\"/g, '"'), null);
+  }
+  const nestedMaches = key.match(/^([^[]+)\[([^[]+)\]$/);
+  if (nestedMaches) {
+    const subKey = getValueOfPathname(nestedMaches[2].trim())(data);
+    const subValue = getValueOfPathname(nestedMaches[1])(data);
+    if (subValue == null || subKey == null) {
+      return encode(null, null);
+    }
+    return encode(subValue[subKey], null);
+  }
+  const value = getValueOfPathname(key)(data);
+  return encode(value, key);
+};
+
+export default (express, encode = encodeFn) => {
+  if (typeof express !== 'string') {
+    return () => '';
+  }
+  if (!express.includes('{{') || !express.includes('}}')) {
+    return () => express;
+  }
+  const regexp = /(?<!\\){{((?:\\}|[^}])*?)}}/g;
   return (data) => {
-    if (typeof str !== 'string') {
-      return '';
-    }
-    if (!str.includes('{{') || !str.includes('}}')) {
-      return str;
-    }
-    const regexp = /(?<!\\){{((?:\\}|[^}])*?)}}/g;
-    const result = str.replace(regexp, (a, dataKey) => {
-      const key = dataKey.trim();
-      if (key === '') {
-        return encode('', null);
-      }
-      if (/^'((?:\\'|[^])*?)'$/.test(key)) {
-        return encode(RegExp.$1.replace(/\\'/g, `'`), null);
-      }
-      if (/^"((?:\\"|[^])*?)"$/.test(key)) {
-        return encode(RegExp.$1.replace(/\\"/g, '"'), null);
-      }
-      const value = getValueOfPathname(key)(data);
-      if (value == null) {
-        return encode('', key);
-      }
-      return encode(value, key);
-    });
+    const result = express.replace(regexp, (a, dataKey) => getDataValue(data, dataKey.trim(), encode));
+
     if (result.includes('\\')) {
       return result.replace(/(\\{|\\})/g, (a, b) => {
         if (b === '\\{') {
@@ -37,6 +52,7 @@ export default (str, encode = (s) => s) => {
         return b;
       });
     }
+
     return result;
   };
 };

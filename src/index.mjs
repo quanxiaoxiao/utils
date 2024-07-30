@@ -8,12 +8,6 @@ export { default as template } from './template.mjs';
 
 export { default as parseInteger } from './parseInteger.mjs';
 
-export {
-  getCurrentDateTime,
-  getDateNow,
-  getCurrentDateName,
-} from './dateTime.mjs';
-
 export const escapeString = (str) => str.replace(/([.+*?=^!:${}()[\]|/\\])/g, '\\$1');
 
 export const sort = (arr, compare) => {

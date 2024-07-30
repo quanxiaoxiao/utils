@@ -32,3 +32,21 @@ test('template', () => {
   assert.equal(template(`a{{"go\\"od"}}a`)(), 'ago"oda');
   assert.equal(template(`a{{'go\\'od'}}a`)(), 'ago\'oda');
 });
+
+test('template 22', () => {
+  const data = {
+    test: {
+      key: 'name',
+    },
+    obj: {
+      name: 'ccc',
+    },
+    foo: 'bar',
+  };
+  assert.equal(template('aaa{{obj[test.key]}}')(data), 'aaaccc');
+  assert.equal(template('aaa{{obj[ test.key]}}')(data), 'aaaccc');
+  assert.equal(template('aaa{{obj[test.key ]}}')(data), 'aaaccc');
+  assert.equal(template('aaa{{obj[ test.key ]}}')(data), 'aaaccc');
+  assert.equal(template('aaa{{obj[sss.keys]}}')(data), 'aaa');
+  assert.equal(template('aaa{{data[test.key]}}')(data), 'aaa');
+});
