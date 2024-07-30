@@ -14,6 +14,8 @@ test('getValueOfPathname', () => {
   assert.equal(getValueOfPathname(-2)(['aa', 'bb', 'ccc']), 'bb');
   assert.equal(getValueOfPathname(-6)(['aa', 'bb', 'ccc']), null);
   assert.equal(getValueOfPathname('2')(['aa', 'bb', 'ccc']), 'ccc');
+  assert.equal(getValueOfPathname('length')(['aa', 'bb', 'ccc']), 3);
+  assert.equal(getValueOfPathname('.length')(['aa', 'bb', 'ccc']), 3);
   assert.equal(getValueOfPathname('.2')(['aa', 'bb', 'ccc']), 'ccc');
   assert.equal(getValueOfPathname('-1')(['aa', 'bb', 'ccc']), 'ccc');
   assert.equal(getValueOfPathname('.-1')(['aa', 'bb', 'ccc']), 'ccc');

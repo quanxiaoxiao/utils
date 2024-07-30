@@ -1,10 +1,18 @@
-import getValueOfPathname from './getValueOfPathname.mjs';
+import parseDataKeyToPathList from './parseDataKeyToPathList.mjs';
+import getValueOfPathList from './getValueOfPathList.mjs';
 
-const encodeFn = (value) => {
+const encodeFn = (value, pathList) => {
   if (value == null) {
     return '';
   }
-  return value;
+  if (pathList.length === 0) {
+    const type = typeof value;
+    if (['number', 'string', 'boolean'].includes(type)) {
+      return `${value}`;
+    }
+    return '';
+  }
+  return value.toString();
 };
 
 const escape = (str) => {
@@ -49,24 +57,30 @@ export default (express, encode = encodeFn) => {
       d.s = escape(express.slice(pre.endOf, d.startOf));
     }
     if (d.key === '') {
-      d.s = `${d.s}${encode(null, null)}`;
+      d.encode = (data) => encode(data, [], d.key);
     } else if (/^'((?:\\'|[^])*?)'$/.test(key)) {
-      d.s = `${d.s}${encode(escape(RegExp.$1.replace(/\\'/g, `'`)), null)}`;
+      const v = escape(RegExp.$1.replace(/\\'/g, `'`));
+      d.encode = () => encode(v, [], d.key);
     } else if (/^"((?:\\"|[^])*?)"$/.test(key)) {
-      d.s = `${d.s}${encode(escape(RegExp.$1.replace(/\\"/g, '"')), null)}`;
+      const v = escape(RegExp.$1.replace(/\\"/g, '"'));
+      d.encode = () => encode(v, [], d.key);
     } else {
       const nestedMaches = key.match(/^([^[]+)\[([^[]+)\]$/);
       if (nestedMaches) {
+        const mainPathList = parseDataKeyToPathList(nestedMaches[1]);
+        const subPathList = parseDataKeyToPathList(nestedMaches[2].trim());
         d.encode = (data) => {
-          const subObj = getValueOfPathname(nestedMaches[1])(data);
-          const subKey = getValueOfPathname(nestedMaches[2].trim())(data);
-          if (subObj == null || subKey == null) {
-            return encode(null, null);
+          const subKey = getValueOfPathList(subPathList)(data);
+          const subKeyType = typeof subKey;
+          if (subKeyType !== 'string' && subKeyType !== 'number') {
+            return '';
           }
-          return encode(subObj[subKey], null);
+          const pathList = [...mainPathList, subKey];
+          return encode(getValueOfPathList(pathList)(data), pathList, d.key);
         };
       } else {
-        d.encode = (data) => encode(getValueOfPathname(d.key)(data), d.key);
+        const pathList = parseDataKeyToPathList(d.key);
+        d.encode = (data) => encode(getValueOfPathList(pathList)(data), pathList, d.key);
       }
     }
     opList.push(d);
