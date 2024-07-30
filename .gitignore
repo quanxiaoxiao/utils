@@ -2,6 +2,7 @@ node_modules
 logs
 dist
 *.log
+_index.mjs
 
 # Swap
 [._]*.s[a-v][a-z]

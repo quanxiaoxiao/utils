@@ -12,7 +12,7 @@ const encodeFn = (value, pathList) => {
     }
     return '';
   }
-  return value.toString();
+  return value;
 };
 
 const escape = (str) => {
@@ -38,7 +38,7 @@ export default (express, encode = encodeFn) => {
   if (!express.includes('{{') || !express.includes('}}')) {
     return () => express;
   }
-  const regexp = /(?<!\\){{((?:\\}|[^}])*?)}}/g;
+  const regexp = /(?<!\\){{((?:\\}}|\\}|[^}])*?)}}/g;
   let op;
   const opList = [];
   while (op = regexp.exec(express)) { // eslint-disable-line

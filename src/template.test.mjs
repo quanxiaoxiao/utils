@@ -31,9 +31,13 @@ test('template', () => {
   assert.equal(template('a{{a}}a', (s) => encodeURIComponent(s))({ a: 'bb s,' }), `a${encodeURIComponent('bb s,')}a`);
   assert.equal(template('a{{"good"}}a')(), 'agooda');
   assert.equal(template('a{{"go\\{{od"}}a')(), 'ago{{oda');
-  // assert.equal(template('a{{"go\\}}od"}}a')(), 'ago}}oda');
+  assert.equal(template('a{{"go\\}\\}od"}}a')(), 'ago}}oda');
+  assert.equal(template('a{{"go\\}}od"}}a')(), 'ago}}oda');
   assert.equal(template('a{{\'good\'}}a')(), 'agooda');
   assert.equal(template('a{{""}}a')(), 'aa');
+  assert.equal(template('a{{"go{{od"}}a')(), 'ago{{oda');
+  // assert.equal(template('a{{"go{{osss}}d"}}a')(), 'ago{{osss}}da');
+  // assert.equal(template('a{{"goosss}}d"}}a')(), 'agoosss}}da');
   assert.equal(template(`a{{''}}a`)(), 'aa');
   assert.equal(template(`a{{"go\\"od"}}a`)(), 'ago"oda');
   assert.equal(template(`a{{'go\\'od'}}a`)(), 'ago\'oda');
