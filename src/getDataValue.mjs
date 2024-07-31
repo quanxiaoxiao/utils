@@ -19,14 +19,14 @@ export default (str) => {
     const pathList = parseDataKeyToPathList(str);
     return (data) => getValueOfPathList(pathList)(data);
   }
+  if (str.slice(startOf + 1, endOf).trim() === '') {
+    return () => null;
+  }
   const len = str.length;
   const tokenList = [];
   if (startOf !== 0) {
     const pathList = parse(str, 0, startOf);
     tokenList.push(() => pathList);
-  }
-  if (str.slice(startOf + 1, endOf).trim() === '') {
-    return () => null;
   }
   {
     const pathList = parse(str, startOf + 1, endOf);
@@ -53,19 +53,17 @@ export default (str) => {
     }
     startOf = nextStart;
     endOf = nextEnd;
-    const s = str.slice(startOf + 1, endOf);
-    if (s.trim() === '') {
-      tokenList.push(() => null);
-    } else {
-      const pathList = parse(str, startOf + 1, endOf);
-      tokenList.push((pre, data) => {
-        const dataKey = getValueOfPathList(pathList)(data);
-        if (typeof dataKey !== 'string' || dataKey === '') {
-          return null;
-        }
-        return [...pre, dataKey];
-      });
+    if (str.slice(startOf + 1, endOf).trim() === '') {
+      return () => null;
     }
+    const pathList = parse(str, startOf + 1, endOf);
+    tokenList.push( (pre, data) => {
+      const dataKey = getValueOfPathList(pathList)(data);
+      if (typeof dataKey !== 'string' || dataKey === '') {
+        return null;
+      }
+      return [...pre, dataKey];
+    });
   }
   if (endOf !== len - 1) {
     const pathList = parse(str, endOf + 1);
