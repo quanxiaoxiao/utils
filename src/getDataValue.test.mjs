@@ -71,4 +71,78 @@ test('getDataValue', () => {
     getDataValue('obj[foo.bar]')({ obj: { 'test.aa': 'quan' }, foo: { bar: 'test.aa' } }),
     'quan',
   );
+  assert.equal(
+    getDataValue('obj[foo].test[big].name')({
+      obj: { goo: {
+        test: {
+          bar: {
+            name: 'quan',
+          },
+        },
+      } },
+      foo: 'goo',
+      big: 'bar',
+    }),
+    'quan',
+  );
+  assert.equal(
+    getDataValue('obj[foo][big].name')({
+      obj: { goo: {
+        bar: {
+          name: 'quan',
+        },
+      } },
+      foo: 'goo',
+      big: 'bar',
+    }),
+    'quan',
+  );
+  assert.equal(
+    getDataValue('obj[foo][big].name')({
+      obj: { goo: {
+        bar: {
+          name: 'quan',
+        },
+      } },
+      foo: 'goo',
+      big: '',
+    }),
+    null,
+  );
+  assert.equal(
+    getDataValue('obj[foo][big].name')({
+      obj: { goo: {
+        ' ': {
+          name: 'quan',
+        },
+      } },
+      foo: 'goo',
+      big: ' ',
+    }),
+    'quan',
+  );
+  assert.equal(
+    getDataValue('obj[foo][big].na[cc')({
+      obj: { goo: {
+        bar: {
+          'na[cc': 'quan',
+        },
+      } },
+      foo: 'goo',
+      big: 'bar',
+    }),
+    'quan',
+  );
+  assert.equal(
+    getDataValue('obj[foo][ ].name')({
+      obj: { goo: {
+        bar: {
+          'na[cc': 'quan',
+        },
+      } },
+      foo: 'goo',
+      big: 'bar',
+    }),
+    null,
+  );
 });
