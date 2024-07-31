@@ -44,7 +44,7 @@ export default (express, encode = encodeFn) => {
   while (op = regexp.exec(express)) { // eslint-disable-line
     const startOf = op.index;
     const endOf = op.index + op[0].length;
-    const key = op[1].trim();
+    const key = escape(op[1].trim());
     const d = {
       startOf,
       endOf,
@@ -58,12 +58,6 @@ export default (express, encode = encodeFn) => {
     }
     if (d.key === '') {
       d.encode = (data) => encode(data, [], d.key);
-    } else if (/^'((?:\\'|[^])*?)'$/.test(key)) {
-      const v = escape(RegExp.$1.replace(/\\'/g, `'`));
-      d.encode = () => encode(v, [], d.key);
-    } else if (/^"((?:\\"|[^])*?)"$/.test(key)) {
-      const v = escape(RegExp.$1.replace(/\\"/g, '"'));
-      d.encode = () => encode(v, [], d.key);
     } else {
       const nestedMaches = key.match(/^([^[]+)\[([^[]+)\]$/);
       if (nestedMaches) {
