@@ -5,6 +5,9 @@ import getValueOfPathname from './getValueOfPathname.mjs';
 test('getValueOfPathname', () => {
   assert.equal(getValueOfPathname()(), null);
   assert.equal(getValueOfPathname(2)([]), null);
+  assert.equal(getValueOfPathname(true)([]), null);
+  assert.equal(getValueOfPathname(true)({}), null);
+  assert.equal(getValueOfPathname({})({}), null);
   assert.equal(getValueOfPathname(2)('aabbcc'), null);
   assert.equal(getValueOfPathname('2')('aabbcc'), 'b');
   assert.equal(getValueOfPathname()({ name: 'aaa' }), null);
