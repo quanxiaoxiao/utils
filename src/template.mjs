@@ -1,20 +1,5 @@
-import parseDataKeyToPathList from './parseDataKeyToPathList.mjs';
-import getValueOfPathList from './getValueOfPathList.mjs';
 import findIndex from './findIndex.mjs';
-
-const encodeFn = (value, pathList) => {
-  if (value == null) {
-    return '';
-  }
-  if (pathList.length === 0) {
-    const type = typeof value;
-    if (['number', 'string', 'boolean'].includes(type)) {
-      return `${value}`;
-    }
-    return '';
-  }
-  return value;
-};
+import getDataValue from './getDataValue.mjs';
 
 const escape = (str) => {
   if (str.includes('\\')) {
@@ -32,7 +17,7 @@ const escape = (str) => {
   return str;
 };
 
-export default (express, encode = encodeFn) => {
+export default (express) => {
   if (typeof express !== 'string') {
     return () => '';
   }
@@ -44,61 +29,52 @@ export default (express, encode = encodeFn) => {
   if (endOf === -1) {
     return () => express;
   }
-  const regexp = /(?<!\\){{((?:\\}}|\\}|[^}])*?)}}/g;
-  let op;
   const opList = [];
-  while (op = regexp.exec(express)) { // eslint-disable-line
-    const startOf = op.index;
-    const endOf = op.index + op[0].length;
-    const key = escape(op[1].trim());
-    const d = {
+  opList.push({
+    startOf,
+    endOf,
+    s: express.slice(startOf + 2, endOf).trim(),
+    decode: getDataValue(escape(express.slice(startOf + 2, endOf).trim())),
+  });
+  const size = express.length;
+  while (endOf < size - 2) {
+    const nextStart = findIndex(express, '{{', endOf + 2);
+    if (nextStart === -1) {
+      break;
+    }
+    const nextEnd = findIndex(express, '}}', nextStart + 2);
+    if (nextEnd === -1) {
+      break;
+    }
+    startOf = nextStart;
+    endOf = nextEnd;
+    opList.push({
       startOf,
       endOf,
-      key,
-    };
-    if (opList.length === 0) {
-      d.s = escape(express.slice(0, d.startOf));
-    } else {
-      const pre = opList[opList.length - 1];
-      d.s = escape(express.slice(pre.endOf, d.startOf));
-    }
-    if (d.key === '') {
-      d.encode = (data) => encode(data, [], d.key);
-    } else {
-      const nestedMaches = key.match(/^([^[]+)\[([^[]+)\]$/);
-      if (nestedMaches) {
-        const mainPathList = parseDataKeyToPathList(nestedMaches[1]);
-        const subPathList = parseDataKeyToPathList(nestedMaches[2].trim());
-        d.encode = (data) => {
-          const subKey = getValueOfPathList(subPathList)(data);
-          const subKeyType = typeof subKey;
-          if (subKeyType !== 'string' && subKeyType !== 'number') {
-            return '';
-          }
-          const pathList = [...mainPathList, subKey];
-          return encode(getValueOfPathList(pathList)(data), pathList, d.key);
-        };
-      } else {
-        const pathList = parseDataKeyToPathList(d.key);
-        d.encode = (data) => encode(getValueOfPathList(pathList)(data), pathList, d.key);
-      }
-    }
-    opList.push(d);
+      s: express.slice(startOf + 2, endOf).trim(),
+      decode: getDataValue(escape(express.slice(startOf + 2, endOf).trim())),
+    });
   }
   const len = opList.length;
-  if (len === 0) {
-    return () => express;
-  }
   return (data) => {
     let result = '';
-    for (let i = 0; i < len; i++) {
+    const [first] = opList;
+    if (first.startOf !== 0) {
+      result += escape(express.slice(0, first.startOf));
+    }
+    result += first.decode(data) ?? '';
+    for (let i = 1; i < len; i++) {
       const op = opList[i];
-      result += op.s;
-      if (op.encode) {
-        result += op.encode(data);
+      const pre = opList[i - 1];
+      if (op.startOf !== pre.endOf + 2) {
+        result += escape(express.slice(pre.endOf + 2, op.startOf));
       }
+      result += op.decode(data) ?? '';
     }
     const last = opList[len - 1];
-    return `${result}${escape(express.slice(last.endOf))}`;
+    if (last.endOf + 2 !== size) {
+      return `${result}${escape(express.slice(last.endOf + 2))}`;
+    }
+    return result;
   };
 };

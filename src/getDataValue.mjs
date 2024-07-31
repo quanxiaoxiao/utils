@@ -5,10 +5,7 @@ import findIndex from './findIndex.mjs';
 const parse = (str, startOf, endOf) => {
   const code = endOf == null ? str.slice(startOf) : str.slice(startOf, endOf);
   const pathList = parseDataKeyToPathList(code);
-  return {
-    code,
-    pathList: pathList.map((s) => s.replaceAll('\\[', '[').replaceAll('\\]', ']')),
-  };
+  return pathList.map((s) => s.replaceAll('\\[', '[').replaceAll('\\]', ']').trim());
 };
 
 export default (str) => {
@@ -26,14 +23,27 @@ export default (str) => {
   const tokenList = [];
   if (startOf !== 0) {
     tokenList.push({
-      ...parse(str, 0, startOf),
+      pathList: parse(str, 0, startOf),
+      s: str.slice(0, startOf),
       isSub: false,
     });
   }
-  tokenList.push({
-    ...parse(str, startOf + 1, endOf),
-    isSub: true,
-  });
+  {
+    const s = str.slice(startOf + 1, endOf);
+    if (s.trim() === '') {
+      tokenList.push({
+        pathList: [],
+        s,
+        isSub: true,
+      });
+    } else {
+      tokenList.push({
+        pathList: parse(str, startOf + 1, endOf),
+        s,
+        isSub: true,
+      });
+    }
+  }
   while (endOf < len - 1) {
     const nextStart = findIndex(str, '[', endOf + 1);
     if (nextStart === -1) {
@@ -45,25 +55,34 @@ export default (str) => {
     }
     if (nextStart !== endOf + 1) {
       tokenList.push({
-        ...parse(str, endOf + 1, nextStart),
+        pathList: parse(str, endOf + 1, nextStart),
+        s: str.slice(endOf + 1, nextStart),
         isSub: false,
       });
     }
     startOf = nextStart;
     endOf = nextEnd;
-    tokenList.push({
-      ...parse(str, startOf + 1, endOf),
-      isSub: true,
-    });
+    const s = str.slice(startOf + 1, endOf);
+    if (s.trim() === '') {
+      tokenList.push({
+        pathList: [],
+        s,
+        isSub: true,
+      });
+    } else {
+      tokenList.push({
+        pathList: parse(str, startOf + 1, endOf),
+        s,
+        isSub: true,
+      });
+    }
   }
   if (endOf !== len - 1) {
     tokenList.push({
-      ...parse(str, endOf + 1),
+      pathList: parse(str, endOf + 1),
+      s: str.slice(endOf + 1),
       isSub: false,
     });
-  }
-  if (tokenList.length === 0) {
-    return (data) => data;
   }
   return (data) => {
     const pathList = [];

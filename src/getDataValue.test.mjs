@@ -4,6 +4,10 @@ import getDataValue from './getDataValue.mjs';
 
 test('getDataValue', () => {
   assert.equal(
+    getDataValue('obj[ ]')({ obj: { name: 'ccc' }, foo: { bar: 'name' }  }),
+    null,
+  );
+  assert.equal(
     getDataValue('name')({ name: 'quan' }),
     'quan',
   );
@@ -22,6 +26,22 @@ test('getDataValue', () => {
   assert.equal(
     getDataValue('na[maa[ss].name')({ 'na[me': '' }),
     null,
+  );
+  assert.equal(
+    getDataValue('obj[foo.bar]')({ obj: { name: 'ccc' }, foo: { bar: 'name' }  }),
+    'ccc',
+  );
+  assert.equal(
+    getDataValue('obj[ foo.bar]')({ obj: { name: 'ccc' }, foo: { bar: 'name' }  }),
+    'ccc',
+  );
+  assert.equal(
+    getDataValue('obj[foo.bar ]')({ obj: { name: 'ccc' }, foo: { bar: 'name' }  }),
+    'ccc',
+  );
+  assert.equal(
+    getDataValue('obj[ foo.bar ]')({ obj: { name: 'ccc' }, foo: { bar: 'name' }  }),
+    'ccc',
   );
   assert.equal(
     getDataValue('namaa[ss].name')({ 'namaa': { foo: { name: '123' } }, ss: 'foo' }),
