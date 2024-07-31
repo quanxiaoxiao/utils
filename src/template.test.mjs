@@ -71,9 +71,8 @@ test('template 22', () => {
   assert.equal(template('aaa{{data[test.key]}}')(data), 'aaa');
   assert.equal(template('aaa{{quan.big[quanName]}}xxx')(data), 'aaa999xxx');
 
-  /*
   assert.equal(
-    template('{{hosts[params.name].protocol}}//{{hosts[params.name].hostname}}:{{hosts[params.name].port}}/{{params.name}}/{{params[0]}}?{{querystring}}')({
+    template('{{hosts[params.name].protocol}}//{{hosts[params.name].hostname}}:{{hosts[params.name].port}}/{{params.name}}/{{params.0}}?{{querystring}}')({
       querystring: 'name=ccc',
       params: {
         name: 'quan',
@@ -90,5 +89,4 @@ test('template 22', () => {
     }),
     'http://127.0.0.1:3333/quan/path/bbb?name=ccc',
   );
-  */
 });
