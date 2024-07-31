@@ -1,6 +1,6 @@
 import parseDataKeyToPathList from './parseDataKeyToPathList.mjs';
 import getValueOfPathList from './getValueOfPathList.mjs';
-import findIndex from './findIndex.mjs';
+import findIndex from './string/findIndex.mjs';
 
 const parse = (str, startOf, endOf) => {
   const code = endOf == null ? str.slice(startOf) : str.slice(startOf, endOf);

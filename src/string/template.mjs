@@ -1,5 +1,5 @@
+import getDataValue from '../getDataValue.mjs';
 import findIndex from './findIndex.mjs';
-import getDataValue from './getDataValue.mjs';
 
 const escape = (str) => {
   if (str.includes('\\')) {
