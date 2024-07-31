@@ -7,6 +7,7 @@ test('template', () => {
   assert.equal(template('aaa')(), 'aaa');
   assert.equal(template('a{aa')(), 'a{aa');
   assert.equal(template('a{{aa')(), 'a{{aa');
+  assert.equal(template('bb}}a{{assa')(), 'bb}}a{{assa');
   assert.equal(template('a{{a}a')(), 'a{{a}a');
   assert.equal(template('{{a}}ss')({ a: '11' }), '11ss');
   assert.equal(template('aa}}a')(), 'aa}}a');

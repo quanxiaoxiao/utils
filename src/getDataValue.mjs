@@ -17,7 +17,7 @@ export default (str) => {
     const pathList = parseDataKeyToPathList(str);
     return (data) => getValueOfPathList(pathList)(data);
   }
-  let endOf = findIndex(str, ']', startOf);
+  let endOf = findIndex(str, ']', startOf + 1);
   if (endOf === -1) {
     const pathList = parseDataKeyToPathList(str);
     return (data) => getValueOfPathList(pathList)(data);

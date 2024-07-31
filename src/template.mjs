@@ -1,5 +1,6 @@
 import parseDataKeyToPathList from './parseDataKeyToPathList.mjs';
 import getValueOfPathList from './getValueOfPathList.mjs';
+import findIndex from './findIndex.mjs';
 
 const encodeFn = (value, pathList) => {
   if (value == null) {
@@ -35,7 +36,12 @@ export default (express, encode = encodeFn) => {
   if (typeof express !== 'string') {
     return () => '';
   }
-  if (!express.includes('{{') || !express.includes('}}')) {
+  let startOf = findIndex(express, '{{');
+  if (startOf === -1) {
+    return () => express;
+  }
+  let endOf = findIndex(express, '}}', startOf + 2);
+  if (endOf === -1) {
     return () => express;
   }
   const regexp = /(?<!\\){{((?:\\}}|\\}|[^}])*?)}}/g;
