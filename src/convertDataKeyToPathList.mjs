@@ -1,5 +1,6 @@
 import parseDataKeyToPathList from './parseDataKeyToPathList.mjs';
 import getValueOfPathList from './getValueOfPathList.mjs';
+import findIndex from './findIndex.mjs';
 
 const parse = (str, startOf, endOf) => {
   const code = endOf == null ? str.slice(startOf) : str.slice(startOf, endOf);
@@ -11,17 +12,17 @@ const parse = (str, startOf, endOf) => {
 };
 
 export default (str) => {
-  let startOf = str.indexOf('[');
-  const len = str.length;
+  let startOf = findIndex(str, '[');
   if (startOf === -1) {
     const pathList = parseDataKeyToPathList(str);
     return (data) => getValueOfPathList(pathList)(data);
   }
-  let endOf = str.slice(startOf + 1).indexOf(']');
+  let endOf = findIndex(str, ']', startOf);
   if (endOf === -1) {
     const pathList = parseDataKeyToPathList(str);
     return (data) => getValueOfPathList(pathList)(data);
   }
+  const len = str.length;
   const tokenList = [];
   if (startOf !== 0) {
     tokenList.push({
@@ -29,20 +30,16 @@ export default (str) => {
       isSub: false,
     });
   }
-  endOf += startOf + 1;
-  {
-    tokenList.push({
-      ...parse(str, startOf + 1, endOf),
-      isSub: true,
-    });
-  }
+  tokenList.push({
+    ...parse(str, startOf + 1, endOf),
+    isSub: true,
+  });
   while (endOf < len - 1) {
-    let nextStart = str.slice(endOf + 1).indexOf('[');
+    const nextStart = findIndex(str, '[', endOf + 1);
     if (nextStart === -1) {
       break;
     }
-    nextStart += endOf + 1;
-    const nextEnd = str.slice(nextStart + 1).indexOf(']');
+    const nextEnd = findIndex(str, ']', nextStart + 1);
     if (nextEnd === -1) {
       break;
     }
@@ -53,7 +50,7 @@ export default (str) => {
       });
     }
     startOf = nextStart;
-    endOf = startOf + 1 + nextEnd;
+    endOf = nextEnd;
     tokenList.push({
       ...parse(str, startOf + 1, endOf),
       isSub: true,
