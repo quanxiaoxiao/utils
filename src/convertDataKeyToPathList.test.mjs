@@ -2,60 +2,30 @@ import test from 'node:test';
 import assert from 'node:assert';
 import convertDataKeyToPathList from './convertDataKeyToPathList.mjs';
 
-/*
-test('convertDataKeyToPathList', () => {
-  assert.deepEqual(
-    convertDataKeyToPathList('')({}),
-    [],
-  );
-  assert.deepEqual(
-    convertDataKeyToPathList('aa[cc.bb')({}),
-    ['aa[cc', 'bb'],
-  );
-  assert.deepEqual(
-    convertDataKeyToPathList('aa[quan]')({}),
-    [],
-  );
-  assert.deepEqual(
-    convertDataKeyToPathList('aa[quan][rice]')({}),
-    [],
-  );
-  assert.deepEqual(
-    convertDataKeyToPathList('aa.bb[ccc].aa')({}),
-    [],
-  );
-  assert.deepEqual(
-    convertDataKeyToPathList('aa.bb[quan.name.foo].aa')({}),
-    [],
-  );
-  assert.deepEqual(
-    convertDataKeyToPathList('aa.bb[quan].aa[bar.goo]')({}),
-    [],
-  );
-  assert.deepEqual(
-    convertDataKeyToPathList('aa.bb[quan].aa.cc[goo.ddd].eee')({
-      quan: 'quan',
-      goo: {
-        ddd: 'foo',
-      },
-    }),
-    [],
-  );
-  assert.deepEqual(
-    convertDataKeyToPathList('aa.bb[quan].aa.cc[goo.ddd].eee[sss1].xxx[bb6].99')({}),
-    [],
-  );
-});
-*/
-
 test('convertDataKeyToPathList', () => {
   assert.equal(
     convertDataKeyToPathList('name')({ name: 'quan' }),
     'quan',
   );
   assert.equal(
+    convertDataKeyToPathList('obj.name')({ obj: { name: 'quan' } }),
+    'quan',
+  );
+  assert.equal(
+    convertDataKeyToPathList('name')({ obj: { name: 'quan' } }),
+    null,
+  );
+  assert.equal(
     convertDataKeyToPathList('na[me')({ 'na[me': 'quan' }),
     'quan',
+  );
+  assert.equal(
+    convertDataKeyToPathList('na[maa[ss].name')({ 'na[me': '' }),
+    null,
+  );
+  assert.equal(
+    convertDataKeyToPathList('namaa[ss].name')({ 'namaa': { foo: { name: '123' } }, ss: 'foo' }),
+    '123',
   );
   assert.equal(
     convertDataKeyToPathList('obj[foo.bar]')({}),
@@ -67,6 +37,18 @@ test('convertDataKeyToPathList', () => {
   );
   assert.equal(
     convertDataKeyToPathList('obj[foo.bar].name')({ obj: { ding: { name: 'quan' } }, foo: { bar: 'ding' } }),
+    'quan',
+  );
+  assert.equal(
+    convertDataKeyToPathList('obj[foo.bar]name')({ obj: { ding: { name: 'quan' } }, foo: { bar: 'ding' } }),
+    'quan',
+  );
+  assert.equal(
+    convertDataKeyToPathList('na[maa\\]ss].name')({ 'na': { foo: { name: '456' } }, 'maa]ss': 'foo' }),
+    456,
+  );
+  assert.equal(
+    convertDataKeyToPathList('obj[foo.bar]')({ obj: { 'test.aa': 'quan' }, foo: { bar: 'test.aa' } }),
     'quan',
   );
 });

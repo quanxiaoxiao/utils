@@ -7,7 +7,7 @@ const parse = (str, startOf, endOf) => {
   const pathList = parseDataKeyToPathList(code);
   return {
     code,
-    pathList,
+    pathList: pathList.map((s) => s.replaceAll('\\[', '[').replaceAll('\\]', ']')),
   };
 };
 
