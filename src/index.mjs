@@ -12,3 +12,4 @@ export { default as findIndex } from './array/findIndex.mjs';
 export { default as waitFor } from './waitFor.mjs';
 
 export { default as hasDataKey } from './hasDataKey.mjs';
+export { default as setValueOfPathname }  from './setValueOfPathname.mjs';
