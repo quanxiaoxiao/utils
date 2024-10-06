@@ -10,3 +10,5 @@ export { default as sort } from './array/sort.mjs';
 export { default as findIndex } from './array/findIndex.mjs';
 
 export { default as waitFor } from './waitFor.mjs';
+
+export { default as hasDataKey } from './hasDataKey.mjs';
