@@ -13,3 +13,8 @@ export { default as waitFor } from './waitFor.mjs';
 
 export { default as hasDataKey } from './hasDataKey.mjs';
 export { default as setValueOfPathname }  from './setValueOfPathname.mjs';
+
+export { default as waitTick } from './waitTick.mjs';
+
+export { default as parseDataKeyToPathList } from './parseDataKeyToPathList.mjs';
+export { default as getValueOfPathList }  from './getValueOfPathList.mjs';
