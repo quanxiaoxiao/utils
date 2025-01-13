@@ -1,5 +1,6 @@
-import test from 'node:test';
 import assert from 'node:assert';
+import test from 'node:test';
+
 import getValueOfPathList from './getValueOfPathList.mjs';
 
 test('getValueOfArray', () => {
@@ -25,10 +26,10 @@ test('getValueOfArray', () => {
   );
   assert.equal(
     getValueOfPathList(['obj', 'names'])({ names: 'quan', obj: { name: 'foo' } }),
-    null
+    null,
   );
   assert.equal(
     getValueOfPathList(['arr', '1', 'name'])({ names: 'quan', arr: [{ name: 'foo' }, { name: 'bar' }] }),
-    'bar'
+    'bar',
   );
 });

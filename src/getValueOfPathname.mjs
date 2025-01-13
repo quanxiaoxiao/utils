@@ -1,6 +1,6 @@
-import parseDataKeyToPathList from './parseDataKeyToPathList.mjs';
-import getValueOfPathList from './getValueOfPathList.mjs';
 import getValueOfArray from './getValueOfArray.mjs';
+import getValueOfPathList from './getValueOfPathList.mjs';
+import parseDataKeyToPathList from './parseDataKeyToPathList.mjs';
 
 export default (pathname) => {
   if (pathname == null) {

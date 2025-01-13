@@ -1,5 +1,5 @@
-import parseDataKeyToPathList from './parseDataKeyToPathList.mjs';
 import getValueOfPathList from './getValueOfPathList.mjs';
+import parseDataKeyToPathList from './parseDataKeyToPathList.mjs';
 import findIndex from './string/findIndex.mjs';
 
 const parse = (str, startOf, endOf) => {
@@ -57,7 +57,7 @@ export default (str) => {
       return () => null;
     }
     const pathList = parse(str, startOf + 1, endOf);
-    tokenList.push( (pre, data) => {
+    tokenList.push((pre, data) => {
       const dataKey = getValueOfPathList(pathList)(data);
       if (typeof dataKey !== 'string' || dataKey === '') {
         return null;

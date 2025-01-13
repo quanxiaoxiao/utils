@@ -1,5 +1,6 @@
-import test from 'node:test';
 import assert from 'node:assert';
+import test from 'node:test';
+
 import getValueOfPathname from './getValueOfPathname.mjs';
 
 test('getValueOfPathname', () => {
@@ -25,8 +26,8 @@ test('getValueOfPathname', () => {
   assert.equal(getValueOfPathname('-2')(['aa', 'bb', 'ccc']), 'bb');
   assert.equal(getValueOfPathname('.-2')(['aa', 'bb', 'ccc']), 'bb');
   assert.equal(getValueOfPathname('.-6')(['aa', 'bb', 'ccc']), null);
-  assert.deepEqual(getValueOfPathname('.')({ name: 'aaa' }), { name: 'aaa'});
-  assert.deepEqual(getValueOfPathname('')({ name: 'aaa' }), { name: 'aaa'});
+  assert.deepEqual(getValueOfPathname('.')({ name: 'aaa' }), { name: 'aaa' });
+  assert.deepEqual(getValueOfPathname('')({ name: 'aaa' }), { name: 'aaa' });
   assert.equal(getValueOfPathname('.name')({ name: 'aaa' }), 'aaa');
   assert.equal(getValueOfPathname('name')({ name: 'aaa' }), 'aaa');
   assert.equal(getValueOfPathname('names')({ name: 'aaa' }), null);
@@ -42,7 +43,7 @@ test('getValueOfPathname', () => {
   assert.equal(getValueOfPathname('.5.name')([{ name: 'aa' }, { name: 'bb' }]), null);
   assert.equal(getValueOfPathname('obj\\.name')({ 'obj.name': 'xxx', name: 'quan', obj: { name: 'bar' } }), 'xxx');
   assert.equal(getValueOfPathname('.obj\\.name')({ 'obj.name': 'xxx', name: 'quan', obj: { name: 'bar' } }), 'xxx');
-  assert.equal(getValueOfPathname('.obj.\\.name')({ obj: { '.name': 'cccc' }, '.name': 'bbb'}), 'cccc');
+  assert.equal(getValueOfPathname('.obj.\\.name')({ obj: { '.name': 'cccc' }, '.name': 'bbb' }), 'cccc');
   assert.equal(getValueOfPathname('.obj.name')({}), null);
   assert.equal(getValueOfPathname('.obj.name')(null), null);
   assert.equal(getValueOfPathname('.obj.name')([]), null);

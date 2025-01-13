@@ -1,5 +1,6 @@
-import test from 'node:test';
 import assert from 'node:assert';
+import test from 'node:test';
+
 import template from './template.mjs';
 
 test('template', () => {
@@ -40,7 +41,7 @@ test('template', () => {
   assert.equal(template('a{{cc\\}}bb}}a')({ 'cc}}bb': '55' }), 'a55a');
   assert.equal(template('a{{cc\\}\\}bb}}a')({ 'cc}}bb': '55' }), 'a55a');
   assert.equal(template('a{{ cc\\}\\}bb }}a')({ 'cc}}bb': '55' }), 'a55a');
-  assert.equal(template(`a{{''}}a`)(), 'aa');
+  assert.equal(template('a{{\'\'}}a')(), 'aa');
   assert.equal(template('a{{name}}{{foo}}{{bar}}a')({ name: '123', foo: '789', bar: 999 }), 'a123789999a');
 });
 

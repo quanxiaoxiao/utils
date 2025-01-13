@@ -1,5 +1,6 @@
 import assert from 'node:assert';
 import test from 'node:test';
+
 import parseDataKeyToPathList from './parseDataKeyToPathList.mjs';
 
 test('parseDataKeyToPathList', () => {

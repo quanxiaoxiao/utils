@@ -47,7 +47,6 @@ export default (data, pathname, value) => {
     };
   }
 
-
   while (dataList.length > 0) {
     const item = dataList.pop();
     if (Array.isArray(item.parent)) {

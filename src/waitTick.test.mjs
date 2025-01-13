@@ -1,7 +1,8 @@
-import test, { mock } from 'node:test';
 import assert from 'node:assert';
-import waitTick from './waitTick.mjs';
+import test, { mock } from 'node:test';
+
 import waitFor from './waitFor.mjs';
+import waitTick from './waitTick.mjs';
 
 test('waitTick 1', async () => {
   const cb = mock.fn();

@@ -1,5 +1,6 @@
-import test from 'node:test';
 import assert from 'node:assert';
+import test from 'node:test';
+
 import getDataValue from './getDataValue.mjs';
 
 test('getDataValue', () => {
@@ -44,7 +45,7 @@ test('getDataValue', () => {
     'ccc',
   );
   assert.equal(
-    getDataValue('namaa[ss].name')({ 'namaa': { foo: { name: '123' } }, ss: 'foo' }),
+    getDataValue('namaa[ss].name')({ namaa: { foo: { name: '123' } }, ss: 'foo' }),
     '123',
   );
   assert.equal(
@@ -64,7 +65,7 @@ test('getDataValue', () => {
     'quan',
   );
   assert.equal(
-    getDataValue('na[maa\\]ss].name')({ 'na': { foo: { name: '456' } }, 'maa]ss': 'foo' }),
+    getDataValue('na[maa\\]ss].name')({ na: { foo: { name: '456' } }, 'maa]ss': 'foo' }),
     456,
   );
   assert.equal(
