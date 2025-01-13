@@ -1,4 +1,5 @@
 export { default as findIndex } from './array/findIndex.mjs';
+export { default as shuffleArray } from './array/shuffleArray.mjs';
 export { default as sort } from './array/sort.mjs';
 export { default as getValueOfPathList }  from './getValueOfPathList.mjs';
 export { default as getValueOfPathname } from './getValueOfPathname.mjs';
