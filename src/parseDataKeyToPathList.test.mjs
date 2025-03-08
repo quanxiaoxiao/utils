@@ -17,6 +17,10 @@ test('parseDataKeyToPathList', () => {
     ['aa'],
   );
   assert.deepEqual(
+    parseDataKeyToPathList('a.b.c'),
+    ['a', 'b', 'c'],
+  );
+  assert.deepEqual(
     parseDataKeyToPathList('.aa.bb.cc'),
     ['aa', 'bb', 'cc'],
   );
@@ -40,6 +44,30 @@ test('parseDataKeyToPathList', () => {
     parseDataKeyToPathList('aa. .bb'),
     ['aa', ' ', 'bb'],
   );
+  assert.deepEqual(
+    parseDataKeyToPathList('a\\.b\\.c'),
+    ['a.b.c'],
+  );
+  assert.deepEqual(
+    parseDataKeyToPathList('a\\.b.c\\.d.e'),
+    ['a.b', 'c.d', 'e'],
+  );
+  assert.deepEqual(
+    parseDataKeyToPathList('a.b.c\\.'),
+    ['a', 'b', 'c.'],
+  );
+  assert.deepEqual(
+    parseDataKeyToPathList('\\.\\.\\.'),
+    ['...'],
+  );
+  assert.deepEqual(
+    parseDataKeyToPathList('a\\\\.b.c'),
+    ['a\\.b', 'c'],
+  );
+  assert.deepEqual(
+    parseDataKeyToPathList('a\\\\.b\\\\.c'),
+    ['a\\.b\\.c'],
+  );
   assert.throws(() => {
     parseDataKeyToPathList('..aa');
   });
@@ -48,5 +76,11 @@ test('parseDataKeyToPathList', () => {
   });
   assert.throws(() => {
     parseDataKeyToPathList('bb.');
+  });
+  assert.throws(() => {
+    parseDataKeyToPathList('a.b.c.');
+  });
+  assert.throws(() => {
+    parseDataKeyToPathList('.a\\.b..c\\.d.e\\..f');
   });
 });
