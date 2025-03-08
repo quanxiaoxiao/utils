@@ -11,5 +11,8 @@ test('round', () => {
   assert.equal(round(22.522, 2), 22.52);
   assert.equal(round(22.522, 4), 22.522);
   assert.equal(round(NaN), NaN);
+  assert.equal(round(22), 22);
+  assert.equal(round(10, 1), 10);
+  assert.equal(round(0, 1), 0);
   assert.equal(round(1.0334501829461123e-7, 2), 0);
 });
