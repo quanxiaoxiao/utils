@@ -5,6 +5,7 @@ export { default as getDataValue } from './getDataValue.mjs';
 export { default as getValueOfPathList } from './getValueOfPathList.mjs';
 export { default as getValueOfPathname } from './getValueOfPathname.mjs';
 export { default as hasDataKey } from './hasDataKey.mjs';
+export { default as clamp } from './number/clamp.mjs';
 export { default as parseInteger } from './number/parseInteger.mjs';
 export { default as round } from './number/round.mjs';
 export { default as parseDataKeyToPathList } from './parseDataKeyToPathList.mjs';
