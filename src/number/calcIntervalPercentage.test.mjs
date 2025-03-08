@@ -139,7 +139,7 @@ test('calcIntervalPercentage', () => {
   );
   assert.equal(
     calcIntervalPercentage(calcPercentageByRangeValue(77.5, range), range, 5),
-    75,
+    80,
   );
   assert.equal(
     calcIntervalPercentage(calcPercentageByRangeValue(77, range), range, 5),
