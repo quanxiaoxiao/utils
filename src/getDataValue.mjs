@@ -8,16 +8,18 @@ const parse = (str, startOf, endOf) => {
   return pathList.map((s) => s.replaceAll('\\[', '[').replaceAll('\\]', ']').trim());
 };
 
+const createPathListHandler = (pathList) => (data) => getValueOfPathList(pathList)(data);
+
 export default (str) => {
   let startOf = findIndex(str, '[');
   if (startOf === -1) {
     const pathList = parseDataKeyToPathList(str);
-    return (data) => getValueOfPathList(pathList)(data);
+    return createPathListHandler(pathList);
   }
   let endOf = findIndex(str, ']', startOf + 1);
   if (endOf === -1) {
     const pathList = parseDataKeyToPathList(str);
-    return (data) => getValueOfPathList(pathList)(data);
+    return createPathListHandler(pathList);
   }
   if (str.slice(startOf + 1, endOf).trim() === '') {
     return () => null;
@@ -31,7 +33,7 @@ export default (str) => {
   {
     const pathList = parse(str, startOf + 1, endOf);
     tokenList.push((pre, data) => {
-      const dataKey = getValueOfPathList(pathList)(data);
+      const dataKey = createPathListHandler(pathList)(data);
       if (typeof dataKey !== 'string' || dataKey === '') {
         return null;
       }
@@ -58,7 +60,7 @@ export default (str) => {
     }
     const pathList = parse(str, startOf + 1, endOf);
     tokenList.push((pre, data) => {
-      const dataKey = getValueOfPathList(pathList)(data);
+      const dataKey = createPathListHandler(pathList)(data);
       if (typeof dataKey !== 'string' || dataKey === '') {
         return null;
       }
@@ -79,6 +81,6 @@ export default (str) => {
     if (pathList == null) {
       return null;
     }
-    return getValueOfPathList(pathList)(data);
+    return createPathListHandler(pathList)(data);
   };
 };
