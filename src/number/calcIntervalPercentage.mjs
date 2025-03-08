@@ -3,7 +3,7 @@ import clamp from './clamp.mjs';
 export default (percentage, range, step) => {
   const [min, max] = range;
   if (min === max) {
-    return 0;
+    return min;
   }
   if (percentage >= 1) {
     return max;
@@ -12,21 +12,21 @@ export default (percentage, range, step) => {
     return min;
   }
   const diff = max - min;
-  const v = diff * percentage + min;
+  const value = diff * percentage + min;
   if (step == null || step === 0) {
-    return v;
+    return value;
   }
   let current = min;
   if (max > min) {
-    const end = Math.ceil(v);
+    const end = Math.ceil(value);
     while (current <= end) {
       const next = current + step;
-      if (next === v) {
+      if (next === value) {
         current = next;
         break;
       }
-      if (next > v) {
-        if ((next - v) <= step / 2) {
+      if (next > value) {
+        if ((next - value) <= step / 2) {
           current = next;
         }
         break;
@@ -35,15 +35,15 @@ export default (percentage, range, step) => {
     }
     return clamp(current, range);
   }
-  const end = Math.floor(v);
+  const end = Math.floor(value);
   while (current >= end) {
     const next = current - step;
-    if (next === v) {
+    if (next === value) {
       current = next;
       break;
     }
-    if (next < v) {
-      if ((v - next) <= step / 2) {
+    if (next < value) {
+      if ((value - next) <= step / 2) {
         current = next;
       }
       break;
