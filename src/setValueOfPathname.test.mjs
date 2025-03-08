@@ -12,7 +12,7 @@ test('setValueOfPathname', () => {
       name: 'aaa',
     },
   );
-  let data = {
+  const data = {
     age: 99,
     name: 'bbb',
     obj: {
@@ -54,7 +54,7 @@ test('setValueOfPathname', () => {
 });
 
 test('setValueOfPathname2', () => {
-  let data = {
+  const data = {
     age: 99,
     name: 'bbb',
     obj: {

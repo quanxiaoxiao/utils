@@ -4,17 +4,8 @@ export default (s) => {
     return null;
   }
   if (type === 'number') {
-    if (!Number.isInteger(s)) {
-      return null;
-    }
-    return s;
+    return Number.isInteger(s) ? s : null;
   }
   const n = parseInt(s, 10);
-  if (!Number.isInteger(n)) {
-    return null;
-  }
-  if (`${n}` !== s) {
-    return null;
-  }
-  return n;
+  return Number.isInteger(n) && `${n}` === `${s}` ? n : null;
 };
