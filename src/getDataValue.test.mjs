@@ -5,7 +5,7 @@ import getDataValue from './getDataValue.mjs';
 
 test('getDataValue', () => {
   assert.equal(
-    getDataValue('obj[ ]')({ obj: { name: 'ccc' }, foo: { bar: 'name' }  }),
+    getDataValue('obj[ ]')({ obj: { name: 'ccc' }, foo: { bar: 'name' } }),
     null,
   );
   assert.equal(
@@ -29,19 +29,19 @@ test('getDataValue', () => {
     null,
   );
   assert.equal(
-    getDataValue('obj[foo.bar]')({ obj: { name: 'ccc' }, foo: { bar: 'name' }  }),
+    getDataValue('obj[foo.bar]')({ obj: { name: 'ccc' }, foo: { bar: 'name' } }),
     'ccc',
   );
   assert.equal(
-    getDataValue('obj[ foo.bar]')({ obj: { name: 'ccc' }, foo: { bar: 'name' }  }),
+    getDataValue('obj[ foo.bar]')({ obj: { name: 'ccc' }, foo: { bar: 'name' } }),
     'ccc',
   );
   assert.equal(
-    getDataValue('obj[foo.bar ]')({ obj: { name: 'ccc' }, foo: { bar: 'name' }  }),
+    getDataValue('obj[foo.bar ]')({ obj: { name: 'ccc' }, foo: { bar: 'name' } }),
     'ccc',
   );
   assert.equal(
-    getDataValue('obj[ foo.bar ]')({ obj: { name: 'ccc' }, foo: { bar: 'name' }  }),
+    getDataValue('obj[ foo.bar ]')({ obj: { name: 'ccc' }, foo: { bar: 'name' } }),
     'ccc',
   );
   assert.equal(
