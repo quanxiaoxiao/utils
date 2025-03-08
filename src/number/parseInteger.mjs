@@ -3,6 +3,9 @@ export default (s) => {
   if (type !== 'string' && type !== 'number') {
     return null;
   }
+  if (s === '') {
+    return null;
+  }
   if (type === 'number') {
     return Number.isInteger(s) ? s : null;
   }
