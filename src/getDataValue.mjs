@@ -12,12 +12,8 @@ const createPathListHandler = (pathList) => (data) => getValueOfPathList(pathLis
 
 export default (str) => {
   let startOf = findIndex(str, '[');
-  if (startOf === -1) {
-    const pathList = parseDataKeyToPathList(str);
-    return createPathListHandler(pathList);
-  }
   let endOf = findIndex(str, ']', startOf + 1);
-  if (endOf === -1) {
+  if (startOf === -1 || endOf === -1) {
     const pathList = parseDataKeyToPathList(str);
     return createPathListHandler(pathList);
   }
