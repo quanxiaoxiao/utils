@@ -51,7 +51,20 @@ test('waitTick 5', async () => {
   const cb = mock.fn();
   const ret = waitTick(null, cb);
 
+  await Promise.resolve();
+  assert.equal(cb.mock.calls.length, 0);
   await waitFor(60);
+  assert.equal(cb.mock.calls.length, 1);
+  ret();
+  await waitFor(60);
+  assert.equal(cb.mock.calls.length, 1);
+});
+
+test('waitTick 6', async () => {
+  const cb = mock.fn();
+  const ret = waitTick(null, cb);
+
+  await Promise.resolve();
   assert.equal(cb.mock.calls.length, 0);
   ret();
   await waitFor(60);

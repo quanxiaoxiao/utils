@@ -2,22 +2,22 @@ import parseInteger from './number/parseInteger.mjs';
 
 export default (time, cb) => {
   let isEmit = false;
+  let n;
   if (time != null) {
-    const n = parseInteger(time);
+    n = parseInteger(time);
     if (n == null || n < 0) {
-      return () => {};
+      n = 0;
     }
-    const tick = setTimeout(() => {
-      if (cb) {
-        isEmit = true;
-        cb();
-      }
-    }, n);
-    return () => {
-      if (!isEmit) {
-        clearTimeout(tick);
-      }
-    };
   }
-  return () => {};
+  const tick = setTimeout(() => {
+    if (cb) {
+      isEmit = true;
+      cb();
+    }
+  }, n);
+  return () => {
+    if (!isEmit) {
+      clearTimeout(tick);
+    }
+  };
 };
