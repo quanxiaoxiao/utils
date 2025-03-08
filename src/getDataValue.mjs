@@ -38,11 +38,8 @@ export default (str) => {
   }
   while (endOf < len - 1) {
     const nextStart = findIndex(str, '[', endOf + 1);
-    if (nextStart === -1) {
-      break;
-    }
     const nextEnd = findIndex(str, ']', nextStart + 1);
-    if (nextEnd === -1) {
+    if (nextStart === -1 || nextEnd === -1) {
       break;
     }
     if (nextStart !== endOf + 1) {

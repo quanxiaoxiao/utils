@@ -1,12 +1,9 @@
 export default (str) => {
-  let pathname = str;
-  if (pathname.startsWith('.')) {
-    pathname = pathname.slice(1);
-  }
-  if (pathname === '') {
+  str = str.startsWith('.') ? str.slice(1) : str;
+  if (str === '') {
     return [];
   }
-  const list = pathname.split(/(?<!\\)\./).map((d) => d.replace(/\\\./g, '.'));
+  const list = str.split(/(?<!\\)\./).map((d) => d.replace(/\\\./g, '.'));
   if (list.some((s) => s === '')) {
     throw new Error(`\`${str}\` parse fail`);
   }
