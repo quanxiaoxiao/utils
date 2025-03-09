@@ -26,7 +26,7 @@ test('template', () => {
   assert.equal(template('a{{a}}a')({ a: 'bbb' }), 'abbba');
   assert.equal(template('a{{a}}aeee\\{{aa')({ a: 'bbb' }), 'abbbaeee{{aa');
   assert.equal(template('a{{ a }}a')({ a: 'bbb' }), 'abbba');
-  assert.equal(template('a{{ obj.name }}a')({ a: 'bbb', obj: { name: 'quan' }  }), 'aquana');
+  assert.equal(template('a{{ obj.name }}a')({ a: 'bbb', obj: { name: 'quan' } }), 'aquana');
   assert.equal(template('a{{a}}ac{{b}}d')({ a: '111', b: '222' }), 'a111ac222d');
   assert.equal(template('a\\{\\{a}}ac{{b}}d')({ a: '111', b: '222' }), 'a{{a}}ac222d');
   assert.equal(template('a\\{\\{a\\}\\}ac{{b}}d')({ a: '111', b: '222' }), 'a{{a}}ac222d');

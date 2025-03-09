@@ -10,7 +10,7 @@ test('shuffleArray', () => {
   const statistics = {};
   const count = 1000000;
   const countPer = Math.floor(count / len);
-  const offset  = 3;
+  const offset = 3;
   for (let i = 0; i < count; i++) {
     const ret = shuffleArray(arr);
     assert(ret !== arr);

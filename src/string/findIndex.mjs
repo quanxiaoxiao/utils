@@ -16,7 +16,7 @@ export default (str, k, startOf, endOf) => {
     end = Math.min(endOf, end);
   }
   for (let i = start; i <= end - keyLen + 1; i++) {
-    const ss = str.slice(i,  i + keyLen);
+    const ss = str.slice(i, i + keyLen);
     if (ss === k) {
       if (i === start) {
         return i;
